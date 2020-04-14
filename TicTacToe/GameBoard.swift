@@ -8,13 +8,19 @@
 
 import Foundation
 
-enum GameBoardError: Error, Equatable {
-    case invalidSquare
-}
-
-typealias Coordinate = (x: Int, y: Int)
-
 struct GameBoard {
+    
+//    enum Position {
+//        case topLeft
+//        case topCenter
+//        case topRight
+//        case middleLeft
+//        case middleCenter
+//        case middleRight
+//        case bottomLeft
+//        case bottomCenter
+//        case bottomRight
+//    }
     
     enum Mark: Equatable {
         case x
@@ -33,6 +39,13 @@ struct GameBoard {
         case empty
     }
     
+    // Squares = grid
+    private var squares = Array(repeating: Square.empty, count: 9)
+    
+    // A subscript function allows me to access objects inside the board using squared brackets.
+    // Whatever is the parameter in this function will serve as the bracket's input.
+    //
+    // e.g. board[(0,0)] -> Mark?
     subscript(coordinate: Coordinate) -> Mark? {
         let square = squares[arrayIndex(for: coordinate)]
         if case let Square.filled(mark) = square {
@@ -42,11 +55,16 @@ struct GameBoard {
         }
     }
     
+    //
     mutating func place(mark: Mark, on square: Coordinate) throws {
         if self[square] != nil {
             throw GameBoardError.invalidSquare
         }
-        squares[arrayIndex(for: square)] = .filled(mark)
+        
+        // Find the index (0) from the given coordinate (0,0)
+        // (0,0) -> index
+        let indexFromCoordinate = arrayIndex(for: square)
+        squares[indexFromCoordinate] = .filled(mark)
     }
     
     var isFull: Bool {
@@ -61,6 +79,10 @@ struct GameBoard {
     private func arrayIndex(for square: Coordinate) -> Int {
         return square.y * 3 + square.x
     }
-    
-    private var squares = Array(repeating: Square.empty, count: 9)
 }
+
+enum GameBoardError: Error, Equatable {
+    case invalidSquare
+}
+
+typealias Coordinate = (x: Int, y: Int)
